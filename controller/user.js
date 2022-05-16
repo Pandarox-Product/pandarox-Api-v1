@@ -173,3 +173,42 @@ exports.profile = async (request, reply) => {
     await reply.status(500).send(error);
   }
 };
+exports.users = async (request, reply) => {
+  const users = await prisma.user.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    select: {
+      id: true,
+      email: true,
+      password: false,
+      author: true,
+      image: true,
+      role: true,
+      accessToken: false,
+      refreshToken: false,
+      usernameDiscord: false,
+      idDiscord: false,
+      createdAtAccessToken: false,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  await reply.send({
+    users,
+  });
+};
+exports.updateUser = async (request, reply) => {
+  const file = request.file ? request.file.filename : undefined;
+  const userUpdate = await prisma.user.update({
+    where: {
+      id: request.token.id,
+    },
+    data: {
+      image: file,
+    },
+  });
+  await reply.send({
+    userUpdate,
+  });
+};

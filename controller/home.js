@@ -1,5 +1,5 @@
-exports.home = (request, reply) => {
+exports.home = async (request, reply) => {
   reply.send({
-    hello: 'world',
+    message: "Pandarox",
   });
 };
