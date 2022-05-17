@@ -1,5 +1,5 @@
 require("dotenv").config();
-// const prisma = require("../server");
+const prisma = require("../server");
 const { default: axios } = require("axios");
 exports.loginDiscord = async (request, reply) => {
   const { code } = await request.query;
@@ -23,9 +23,9 @@ exports.loginDiscord = async (request, reply) => {
           },
         }
       );
-      const { accessToken, refreshToken } = response.data;
-      console.log(accessToken);
-      console.log(refreshToken);
+      const { access_token, refresh_token } = response.data;
+      console.log(access_token);
+      console.log(refresh_token);
       console.log(response.data);
       // let date = new Date();
       // let userSucess = await prisma.user.update({
@@ -35,8 +35,38 @@ exports.loginDiscord = async (request, reply) => {
       //     createdAtAccessToken: date,
       //   },
       // });
+      const dataUser = await axios.get("https://discord.com/api/v9/users/@me", {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      const discordId = parseInt(dataUser.data.id);
+      let date = new Date();
+      await prisma.discord.create({
+        data: {
+          id: discordId,
+          accessToken: access_token,
+          refreshToken: refresh_token,
+          usernameDiscord: dataUser.data.username,
+          createdAtAccessToken: date,
+        },
+      });
+      reply.redirect(`http://127.0.0.1:5500/user.html?id=${dataUser.data.id}`);
     } catch (error) {
       console.log(error);
     }
   }
+};
+exports.discord = async (request, reply) => {
+  const discordId = request.params.id;
+  console.log(request.token);
+  const userUpdate = await prisma.user.update({
+    where: {
+      id: request.token.id,
+    },
+    data: {
+      discordId: discordId,
+    },
+  });
+  console.log(userUpdate);
 };

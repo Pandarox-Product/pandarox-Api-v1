@@ -59,11 +59,6 @@ exports.signup = async (request, reply) => {
         author: true,
         image: true,
         role: true,
-        accessToken: false,
-        refreshToken: false,
-        usernameDiscord: false,
-        idDiscord: false,
-        createdAtAccessToken: false,
         createdAt: true,
         updatedAt: true,
       },
@@ -82,9 +77,7 @@ exports.signup = async (request, reply) => {
       token,
     });
   } catch (error) {
-    await reply({
-      error,
-    });
+    await reply.status(500).send(error);
   }
 };
 exports.login = async (request, reply) => {

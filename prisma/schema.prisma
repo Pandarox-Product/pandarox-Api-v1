@@ -8,20 +8,27 @@ datasource db {
 }
 
 model User {
-  id                   String    @id @default(uuid())
-  email                String    @unique @db.VarChar(50)
-  password             String    @db.VarChar(255)
-  author               String    @unique @db.VarChar(20)
-  image                String?   @db.VarChar(255)
-  role                 Role      @default(USER)
+  id        String    @id @default(uuid())
+  email     String    @unique @db.VarChar(50)
+  password  String    @db.VarChar(255)
+  author    String    @unique @db.VarChar(20)
+  image     String?   @db.VarChar(255)
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Post      Post[]
+  Discord   Discord[]
+}
+
+model Discord {
+  id                   Int       @id
   accessToken          String?
   refreshToken         String?
   usernameDiscord      String?
   idDiscord            String?
   createdAtAccessToken DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  Post                 Post[]
+  user                 User?     @relation(fields: [userId], references: [id])
+  userId               String?   @unique
 }
 
 model Post {
